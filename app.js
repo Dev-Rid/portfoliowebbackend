@@ -9,18 +9,35 @@ require("dotenv").config()
 // express app
 const app = express()
 
-// middleware
+
+// for deployment purpose
+// Serve frontend build
+app.use(express.static("myportfolioweb/build"))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "myportfolioweb/build", "build", "index.html" ))
+})
+
+
+// middleware 
 app.use(cors())
 app.use(bodyParser.json()) //parse JSON data
+
+
 
 // nodemailer configuration
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
+    port: 587,
+    secure: "false",
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    logger: true,
+    debug: true,
 })
+
 
 
 // Email Endpoint
@@ -43,7 +60,7 @@ app.post("/send-email", (req, res)=>{
             console.log("Email sent successfully:", info.response);
             res.status(200).json({ messsage: "Email sent successfully!"})
         }
-    })
+    }) 
 
 })
 
